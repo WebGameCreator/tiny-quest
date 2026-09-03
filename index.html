@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Tiny Quest — turn your daily goals into a game. Keep your streak alive.">
+<title>Tiny Quest — your day, but a game</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128293</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-fx"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<div id="app" class="app">
+
+  <!-- ======================= ONBOARDING ======================= -->
+  <div id="onboarding" class="screen onboarding hidden">
+    <div class="ob-card">
+      <div class="ob-art">🎯</div>
+      <h1 class="ob-title">Tiny&nbsp;Quest</h1>
+      <p class="ob-sub">Your day, but a game.<br>Small goals. Real streaks. Actual fireworks.</p>
+
+      <div class="ob-steps">
+        <div class="ob-step">
+          <label for="goal-input" class="ob-label">What do you want to do every day?</label>
+          <input id="goal-input" class="goal-input" type="text" maxlength="40"
+                 placeholder="e.g. Go to bed early" autocomplete="off">
+          <button id="add-goal" class="btn btn-primary">+ Add quest</button>
+          <div class="ob-suggestions">
+            <button class="chip" type="button">🛏️ Go to bed early</button>
+            <button class="chip" type="button">📚 Read 10 pages</button>
+            <button class="chip" type="button">🏃 Move for 20 min</button>
+            <button class="chip" type="button">💧 Drink more water</button>
+            <button class="chip" type="button">🧘 Meditate 5 min</button>
+            <button class="chip" type="button">📵 No phone in bed</button>
+          </div>
+        </div>
+
+        <div class="ob-step">
+          <label class="ob-label">Your quests</label>
+          <div id="ob-goal-list" class="ob-goal-list"></div>
+          <div class="ob-tip">Tip: 3–5 quests is the sweet spot.</div>
+        </div>
+
+        <div class="ob-actions">
+          <button id="start-adventure" class="btn btn-primary btn-big" disabled>Begin the journey ⚔️</button>
+          <div class="ob-note">No account. Everything lives in your browser.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= DASHBOARD ======================= -->
+  <div id="dashboard" class="screen dashboard hidden">
+    <div class="dash-inner">
+
+      <header class="topbar">
+        <div class="brand">🔥 <span>Tiny Quest</span></div>
+        <button id="btn-trophies" class="btn btn-ghost" title="Trophy case">🏆 <span id="trophy-count">0</span></button>
+        <button id="btn-stats" class="btn btn-ghost" title="Battle log">📊</button>
+      </header>
+
+      <div class="hero">
+        <div class="hero-stats">
+          <div class="streak-wrap">
+            <div class="streak-ring">
+              <svg class="ring" viewBox="0 0 240 240">
+                <circle class="ring-track" cx="120" cy="120" r="104"/>
+                <circle class="ring-progress" cx="120" cy="120" r="104"/>
+              </svg>
+            </div>
+            <div class="streak-core">
+              <div class="streak-glow"></div>
+              <div id="streak-flame" class="streak-flame">🔥</div>
+              <div class="streak-number"><span id="streak-count">0</span><span class="streak-suffix">day<span id="streak-plural">s</span></span></div>
+              <div id="streak-label" class="streak-label">streak</div>
+            </div>
+          </div>
+
+          <div class="sub-stats">
+            <div class="substat">
+              <div class="substat-icon" id="level-orb">🌟</div>
+              <div class="substat-body">
+                <div class="substat-value" id="level-count">Level 1</div>
+                <div class="substat-sub" id="rank-name">Seedling</div>
+              </div>
+            </div>
+            <div class="substat">
+              <div class="substat-icon" id="shield-orb">🧊</div>
+              <div class="substat-body">
+                <div class="substat-value" id="shield-count">0 shields</div>
+                <div class="substat-sub">they protect your streak</div>
+              </div>
+            </div>
+        <div class="substat">
+          <div class="substat-icon">🏅</div>
+          <div class="substat-body">
+            <div class="substat-value" id="perfect-count">0 perfect days</div>
+            <div class="substat-sub">all quests, one day</div>
+          </div>
+        </div>
+      </div>
+        </div>
+      </div>
+
+      <div class="momentum">
+        <div class="momentum-head">
+          <span>Today's momentum</span>
+          <span id="momentum-pct">0%</span>
+        </div>
+        <div class="momentum-bar">
+          <div id="momentum-fill" class="momentum-fill"></div>
+          <div class="momentum-bumps"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div id="momentum-msg" class="momentum-msg">Your quests await…</div>
+      </div>
+
+      <section class="quest-section">
+        <h2 class="section-title">Today's Quests <span id="quest-date" class="section-sub"></span></h2>
+        <div id="quest-list" class="quest-list"></div>
+        <button id="btn-new-quest" class="btn btn-dashed">+ add a new quest</button>
+        <div id="new-quest-form" class="new-quest-form hidden">
+          <input id="new-quest-input" class="goal-input" type="text" maxlength="40"
+                 placeholder="New quest name…" autocomplete="off">
+          <div class="new-quest-actions">
+            <button id="new-quest-submit" class="btn btn-primary">+ Add</button>
+            <button id="new-quest-cancel" class="btn btn-ghost">Cancel</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ======================= TROPHIES ======================= -->
+  <div id="trophies" class="screen modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><h3>🏆 Trophy Case</h3><button class="modal-close" data-close="trophies">✕</button></div>
+      <div class="modal-body">
+        <div id="trophy-grid" class="trophy-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= STATS ======================= -->
+  <div id="stats" class="screen modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><h3>📊 Battle Log</h3><button class="modal-close" data-close="stats">✕</button></div>
+      <div class="modal-body">
+        <div class="stats-cards">
+          <div class="stat-card"><div class="stat-num" id="stat-best">0</div><div class="stat-lbl">best streak</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-perfect">0</div><div class="stat-lbl">perfect days</div></div>
+        </div>
+        <h4>Last 7 days</h4>
+        <div id="week-grid" class="week-grid"></div>
+        <h4>Quest hall of fame</h4>
+        <div id="per-goal-stats" class="per-goal-stats"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= REWARD OVERLAY ======================= -->
+  <div id="reward-overlay" class="reward-overlay hidden">
+    <div class="reward-card">
+      <div class="reward-emblem" id="reward-emblem">✨</div>
+      <div class="reward-title" id="reward-title">Perfect Day!</div>
+      <div class="reward-sub" id="reward-sub"></div>
+      <button id="reward-continue" class="btn btn-primary btn-big">Keep going ➜</button>
+    </div>
+  </div>
+
+  <div id="toast-layer" class="toast-layer"></div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

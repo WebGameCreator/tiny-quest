@@ -1,0 +1,10 @@
+{
+  "name": "tiny-quest",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Tiny Quest — static, front-end-only daily goal tracker. No dependencies; this file only marks serve.js as an ES module.",
+  "scripts": {
+    "start": "node serve.js"
+  }
+}
